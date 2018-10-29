@@ -29,7 +29,6 @@
             function initMap() {
                 $.get("https://ipinfo.io", function(response) {
                     let loc = response.loc.split(',');
-                    console.log(loc);
 
                     map = new google.maps.Map(document.getElementById('map'), {
                         center: {lat: parseFloat(loc[0]), lng: parseFloat(loc[1])},
@@ -46,7 +45,9 @@
 
                     new google.maps.Marker({
                         position: {lat: marker[0], lng: marker[1]}, 
-                        map: map
+                        map: map,
+                        animation: google.maps.Animation.DROP,
+                        title: marker[2]
                     });
                 }
             };
