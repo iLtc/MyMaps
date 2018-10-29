@@ -21,19 +21,35 @@
     <body>
         <div id="map"></div>
         <script>
-          var map;
-          function initMap() {
-            $.get("https://ipinfo.io", function(response) {
-                let loc = response.loc.split(',');
-                console.log(loc);
+            let markers = [
+                [41.6471118, -91.5743828, 'Iowa City, IA, USA', '2015 - Present']
+            ];
 
-                map = new google.maps.Map(document.getElementById('map'), {
-                    center: {lat: parseFloat(loc[0]), lng: parseFloat(loc[1])},
-                    zoom: 4
-                });
-            }, "jsonp");
-            
-          }
+            var map;
+            function initMap() {
+                $.get("https://ipinfo.io", function(response) {
+                    let loc = response.loc.split(',');
+                    console.log(loc);
+
+                    map = new google.maps.Map(document.getElementById('map'), {
+                        center: {lat: parseFloat(loc[0]), lng: parseFloat(loc[1])},
+                        zoom: 4
+                    });
+
+                    loadMarkers();
+                }, "jsonp");
+            };
+
+            let loadMarkers = function(){
+                for (var i = 0; i < markers.length; i++) {
+                    let marker = markers[i];
+
+                    new google.maps.Marker({
+                        position: {lat: marker[0], lng: marker[1]}, 
+                        map: map
+                    });
+                }
+            };
         </script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
         <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB8-k6b-eg2Y3sQcnfVEMLnjUEwYU74cb4&callback=initMap"
