@@ -31,6 +31,21 @@
 
             var geochart = new google.visualization.GeoChart(
                 document.getElementById('world-map'));
+
+            google.visualization.events.addListener(geochart, 'select', function () {
+                let selection = geochart.getSelection();
+
+                if (selection.length > 0) {
+                    let country = data.getValue(selection[0].row, 0);
+                    
+                    if (country == 'China') {
+                        window.location.hash = 'cn-map';
+                    } else if (country == 'United States of America') {
+                        window.location.hash = 'us-map';
+                    }
+                }
+            });
+
             geochart.draw(data);
         }
 
