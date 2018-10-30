@@ -1,0 +1,33 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <div id="us-map" style="width: 800px; height: 500px;"></div>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        google.charts.load('current', {
+            'packages':['geochart'],
+            'mapsApiKey': 'AIzaSyB8-k6b-eg2Y3sQcnfVEMLnjUEwYU74cb4'
+        });
+        google.charts.setOnLoadCallback(drawMaps);
+
+        function drawMaps(){
+            drawUS();
+        };
+
+        let drawUS = function() {
+            var data = google.visualization.arrayToDataTable([
+                ['State', {type: 'string', role: 'tooltip'}],
+                ['Iowa', '2015 - Present'],
+                ['Illinois', 'Multiple Times 2015 - Present'],
+                ['California', 'Thanksgiving Break 2015 and Summer 2018'],
+                ['Nevada', 'Spring Break 2017']
+            ]);
+
+            var geochart = new google.visualization.GeoChart(
+                document.getElementById('us-map'));
+            geochart.draw(data, {region: "US", resolution: "provinces"});
+        }
+    </script>
+  </body>
+</html>
