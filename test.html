@@ -2,6 +2,7 @@
   <head>
   </head>
   <body>
+    <div id="cn-map" style="width: 800px; height: 500px;"></div>
     <div id="us-map" style="width: 800px; height: 500px;"></div>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
@@ -12,8 +13,20 @@
         google.charts.setOnLoadCallback(drawMaps);
 
         function drawMaps(){
+            drawCN();
             drawUS();
         };
+
+        let drawCN = function() {
+            var data = google.visualization.arrayToDataTable([
+                ['State', {type: 'string', role: 'tooltip'}],
+                ['Anhui Sheng', '1994 - Present']
+            ]);
+
+            var geochart = new google.visualization.GeoChart(
+                document.getElementById('cn-map'));
+            geochart.draw(data, {region: "CN", resolution: "provinces"});
+        }
 
         let drawUS = function() {
             var data = google.visualization.arrayToDataTable([
