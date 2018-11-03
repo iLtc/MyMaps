@@ -18,10 +18,10 @@
         drawWorld();
         drawCN();
         drawUS();
-    };
+    }
 
     let drawWorld = function() {
-        var data = google.visualization.arrayToDataTable([
+        const data = google.visualization.arrayToDataTable([
             ['State', {type: 'string', role: 'tooltip'}],
             ['China', '1994 - Present'],
             ['United States of America', '2015 - Present'],
@@ -30,7 +30,7 @@
             ['Switzerland', 'Summer 2013']
         ]);
 
-        var geochart = new google.visualization.GeoChart(
+        const geochart = new google.visualization.GeoChart(
             document.getElementById('world-map'));
 
         google.visualization.events.addListener(geochart, 'select', function () {
@@ -48,10 +48,10 @@
         });
 
         geochart.draw(data);
-    }
+    };
 
     let drawCN = function() {
-        var data = google.visualization.arrayToDataTable([
+        const data = google.visualization.arrayToDataTable([
             ['State', {type: 'string', role: 'tooltip'}],
             ['Anhui Sheng', '1994 - Present'],
             ['Beijing Shi', 'Summer 2015'],
@@ -65,13 +65,13 @@
             ['Jiangsu Sheng', 'March 2010'],
         ]);
 
-        var geochart = new google.visualization.GeoChart(
+        const geochart = new google.visualization.GeoChart(
             document.getElementById('cn-map'));
         geochart.draw(data, {region: "CN", resolution: "provinces"});
-    }
+    };
 
     let drawUS = function() {
-        var data = google.visualization.arrayToDataTable([
+        const data = google.visualization.arrayToDataTable([
             ['State', {type: 'string', role: 'tooltip'}],
             ['Iowa', '2015 - Present'],
             ['Illinois', 'Summer 2016'],
@@ -86,7 +86,7 @@
             ['Nevada', 'Spring Break 2017']
         ]);
 
-        var geochart = new google.visualization.GeoChart(
+        const geochart = new google.visualization.GeoChart(
             document.getElementById('us-map'));
         geochart.draw(data, {region: "US", resolution: "provinces"});
     }
