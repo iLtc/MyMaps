@@ -1,11 +1,36 @@
 <html>
 <head>
+    <title>My Maps</title>
+    <style>
+        .map {
+            margin: auto;
+            width: 1200px;
+        }
 
+        @media (max-width: 1250px) {
+            .map {
+                width: 1000px;
+            }
+        }
+
+        @media (max-width: 1050px) {
+            .map {
+                width: 700px;
+            }
+        }
+
+        @media (max-width: 750px) {
+            .map {
+                width: 500px;
+            }
+        }
+    </style>
 </head>
 <body>
-<div id="world-map" style="width: 1000px"></div>
-<div id="cn-map" style="width: 1000px"></div>
-<div id="us-map" style="width: 1000px"></div>
+<div id="world-map" class="map"></div>
+<div id="cn-map" class="map"></div>
+<div id="us-map" class="map"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript">
     google.charts.load('current', {
@@ -19,6 +44,17 @@
         drawCN();
         drawUS();
     }
+
+    var old_width = $('#world-map').css('width');
+
+    window.onresize = function() {
+        let new_width = $('#world-map').css('width');
+
+        if (old_width !== new_width) {
+            old_width = new_width;
+            drawMaps();
+        }
+    };
 
     let drawWorld = function() {
         const data = google.visualization.arrayToDataTable([
