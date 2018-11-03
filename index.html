@@ -1,94 +1,95 @@
 <html>
-  <head>
-  </head>
-  <body>
-    <div id="world-map" style="width: 1000px"></div>
-    <div id="cn-map" style="width: 1000px"></div>
-    <div id="us-map" style="width: 1000px"></div>
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script type="text/javascript">
-        google.charts.load('current', {
-            'packages':['geochart'],
-            'mapsApiKey': 'AIzaSyB8-k6b-eg2Y3sQcnfVEMLnjUEwYU74cb4'
-        });
-        google.charts.setOnLoadCallback(drawMaps);
+<head>
 
-        function drawMaps(){
-            drawWorld();
-            drawCN();
-            drawUS();
-        };
+</head>
+<body>
+<div id="world-map" style="width: 1000px"></div>
+<div id="cn-map" style="width: 1000px"></div>
+<div id="us-map" style="width: 1000px"></div>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+    google.charts.load('current', {
+        'packages':['geochart'],
+        'mapsApiKey': 'AIzaSyB8-k6b-eg2Y3sQcnfVEMLnjUEwYU74cb4'
+    });
+    google.charts.setOnLoadCallback(drawMaps);
 
-        let drawWorld = function() {
-            var data = google.visualization.arrayToDataTable([
-                ['State', {type: 'string', role: 'tooltip'}],
-                ['China', '1994 - Present'],
-                ['United States of America', '2015 - Present'],
-                ['France', 'Summer 2013'],
-                ['Italy', 'Summer 2013'],
-                ['Switzerland', 'Summer 2013']
-            ]);
+    function drawMaps(){
+        drawWorld();
+        drawCN();
+        drawUS();
+    };
 
-            var geochart = new google.visualization.GeoChart(
-                document.getElementById('world-map'));
+    let drawWorld = function() {
+        var data = google.visualization.arrayToDataTable([
+            ['State', {type: 'string', role: 'tooltip'}],
+            ['China', '1994 - Present'],
+            ['United States of America', '2015 - Present'],
+            ['France', 'Summer 2013'],
+            ['Italy', 'Summer 2013'],
+            ['Switzerland', 'Summer 2013']
+        ]);
 
-            google.visualization.events.addListener(geochart, 'select', function () {
-                let selection = geochart.getSelection();
+        var geochart = new google.visualization.GeoChart(
+            document.getElementById('world-map'));
 
-                if (selection.length > 0) {
-                    let country = data.getValue(selection[0].row, 0);
-                    
-                    if (country == 'China') {
-                        window.location.hash = 'cn-map';
-                    } else if (country == 'United States of America') {
-                        window.location.hash = 'us-map';
-                    }
+        google.visualization.events.addListener(geochart, 'select', function () {
+            let selection = geochart.getSelection();
+
+            if (selection.length > 0) {
+                let country = data.getValue(selection[0].row, 0);
+
+                if (country == 'China') {
+                    window.location.hash = 'cn-map';
+                } else if (country == 'United States of America') {
+                    window.location.hash = 'us-map';
                 }
-            });
+            }
+        });
 
-            geochart.draw(data);
-        }
+        geochart.draw(data);
+    }
 
-        let drawCN = function() {
-            var data = google.visualization.arrayToDataTable([
-                ['State', {type: 'string', role: 'tooltip'}],
-                ['Anhui Sheng', '1994 - Present'],
-                ['Beijing Shi', 'Summer 2015'],
-                ['Shanghai Shi', 'Summer 2015'],
-                ['Zhejiang Sheng', 'Summer 2015'],
-                ['Guangdong Sheng', '2012 - 2015'],
-                ['Hong Kong SAR', 'Sometime 2012'],
-                ['Macao SAR', 'Sometime 2012'],
-                ['Liaoning Sheng', 'Summer 2012'],
-                ['Sichuan Sheng', 'Summer 2010'],
-                ['Jiangsu Sheng', 'March 2010'],
-            ]);
+    let drawCN = function() {
+        var data = google.visualization.arrayToDataTable([
+            ['State', {type: 'string', role: 'tooltip'}],
+            ['Anhui Sheng', '1994 - Present'],
+            ['Beijing Shi', 'Summer 2015'],
+            ['Shanghai Shi', 'Summer 2015'],
+            ['Zhejiang Sheng', 'Summer 2015'],
+            ['Guangdong Sheng', '2012 - 2015'],
+            ['Hong Kong SAR', 'Sometime 2012'],
+            ['Macao SAR', 'Sometime 2012'],
+            ['Liaoning Sheng', 'Summer 2012'],
+            ['Sichuan Sheng', 'Summer 2010'],
+            ['Jiangsu Sheng', 'March 2010'],
+        ]);
 
-            var geochart = new google.visualization.GeoChart(
-                document.getElementById('cn-map'));
-            geochart.draw(data, {region: "CN", resolution: "provinces"});
-        }
+        var geochart = new google.visualization.GeoChart(
+            document.getElementById('cn-map'));
+        geochart.draw(data, {region: "CN", resolution: "provinces"});
+    }
 
-        let drawUS = function() {
-            var data = google.visualization.arrayToDataTable([
-                ['State', {type: 'string', role: 'tooltip'}],
-                ['Iowa', '2015 - Present'],
-                ['Illinois', 'Summer 2016'],
-                ['California', 'Thanksgiving Break 2015 and Summer 2018'],
-                ['Connecticut', 'Summer 2017'],
-                ['Delaware', 'Summer 2017'],
-                ['Massachusetts', 'Summer 2017'],
-                ['New Jersey', 'Summer 2017'],
-                ['New York', 'Summer 2017'],
-                ['Pennsylvania', 'Summer 2017'],
-                ['Rhode Island', 'Summer 2017'],
-                ['Nevada', 'Spring Break 2017']
-            ]);
+    let drawUS = function() {
+        var data = google.visualization.arrayToDataTable([
+            ['State', {type: 'string', role: 'tooltip'}],
+            ['Iowa', '2015 - Present'],
+            ['Illinois', 'Summer 2016'],
+            ['California', 'Thanksgiving Break 2015 and Summer 2018'],
+            ['Connecticut', 'Summer 2017'],
+            ['Delaware', 'Summer 2017'],
+            ['Massachusetts', 'Summer 2017'],
+            ['New Jersey', 'Summer 2017'],
+            ['New York', 'Summer 2017'],
+            ['Pennsylvania', 'Summer 2017'],
+            ['Rhode Island', 'Summer 2017'],
+            ['Nevada', 'Spring Break 2017']
+        ]);
 
-            var geochart = new google.visualization.GeoChart(
-                document.getElementById('us-map'));
-            geochart.draw(data, {region: "US", resolution: "provinces"});
-        }
-    </script>
-  </body>
+        var geochart = new google.visualization.GeoChart(
+            document.getElementById('us-map'));
+        geochart.draw(data, {region: "US", resolution: "provinces"});
+    }
+</script>
+</body>
 </html>
