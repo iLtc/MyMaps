@@ -7,6 +7,10 @@
             width: 1200px;
         }
 
+        h1 {
+            text-align: center;
+        }
+
         @media (max-width: 1250px) {
             .map {
                 width: 1000px;
@@ -27,9 +31,19 @@
     </style>
 </head>
 <body>
-<div id="world-map" class="map"></div>
-<div id="cn-map" class="map"></div>
-<div id="us-map" class="map"></div>
+<section>
+    <h1>Countries I Have Visited</h1>
+    <div id="world-map" class="map"></div>
+</section>
+<section>
+    <h1>Provinces I Have Visited in China</h1>
+    <div id="cn-map" class="map"></div>
+</section>
+<section>
+    <h1>States I Have Visited in United States of America</h1>
+    <div id="us-map" class="map"></div>
+</section>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript">
