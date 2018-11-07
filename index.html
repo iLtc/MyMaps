@@ -31,15 +31,15 @@
     </style>
 </head>
 <body>
-<section>
+<section id="world">
     <h1>Countries I Have Visited</h1>
     <div id="world-map" class="map"></div>
 </section>
-<section>
+<section id="cn">
     <h1>Provinces I Have Visited in China</h1>
     <div id="cn-map" class="map"></div>
 </section>
-<section>
+<section id="us">
     <h1>States I Have Visited in United States of America</h1>
     <div id="us-map" class="map"></div>
 </section>
@@ -90,9 +90,9 @@
                 let country = data.getValue(selection[0].row, 0);
 
                 if (country == 'China') {
-                    window.location.hash = 'cn-map';
+                    window.location.hash = 'cn';
                 } else if (country == 'United States of America') {
-                    window.location.hash = 'us-map';
+                    window.location.hash = 'us';
                 }
             }
         });
