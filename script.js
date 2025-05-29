@@ -14,7 +14,7 @@ let oldWidth = $('#world-map').css('width');
 
 window.onresize = () => {
     const newWidth = $('#world-map').css('width');
-    
+
     if (oldWidth !== newWidth) {
         oldWidth = newWidth;
         drawMaps();
@@ -26,12 +26,12 @@ const drawWorld = () => {
 
     const data = google.visualization.arrayToDataTable([
         ['State', { type: 'string', role: 'tooltip' }],
-        ['China', '1994 - Present'],
-        ['United States', '2015 - 2018 and 2019 - Present'],
-        ['France', 'Summer 2013'],
-        ['Italy', 'Summer 2013'],
-        ['Switzerland', 'Summer 2013'],
-        ['Canada', 'June 2024']
+        ['China', '1994'],
+        ['United States', '2015'],
+        ['France', '2013'],
+        ['Italy', '2013'],
+        ['Switzerland', '2013'],
+        ['Canada', '2024']
     ]);
 
     const geochart = new google.visualization.GeoChart(
@@ -59,17 +59,17 @@ const drawCN = () => {
 
     const data = google.visualization.arrayToDataTable([
         ['State', { type: 'string', role: 'tooltip' }],
-        ['Heilongjiang Sheng', 'Summer 2019'],
-        ['Jilin Sheng', 'Summer 2019'],
-        ['Zhejiang Sheng', 'Summer 2015 and Spring 2019'],
-        ['Guangdong Sheng', '2012 - 2015, Winter 2018'],
-        ['Beijing Shi', 'Summer 2015'],
-        ['Shanghai Shi', 'Summer 2015'],
-        ['HK', 'Sometime 2012'],
-        ['Macao SAR', 'Sometime 2012'],
-        ['Liaoning Sheng', 'Summer 2012'],
-        ['Sichuan Sheng', 'Summer 2010'],
-        ['Jiangsu Sheng', 'March 2010'],
+        ['Heilongjiang Sheng', '2019'],
+        ['Jilin Sheng', '2019'],
+        ['Zhejiang Sheng', '2015'],
+        ['Guangdong Sheng', '2012'],
+        ['Beijing Shi', '2015'],
+        ['Shanghai Shi', '2015'],
+        ['HK', '2012'],
+        ['Macao SAR', '2012'],
+        ['Liaoning Sheng', '2012'],
+        ['Sichuan Sheng', '2010'],
+        ['Jiangsu Sheng', '2010'],
         ['Shanxi Sheng', 'When I was young'],
         ['Yunnan Sheng', 'When I was young'],
         ['Jiangxi Sheng', 'When I was young'],
@@ -89,20 +89,21 @@ const drawUS = () => {
 
     const data = google.visualization.arrayToDataTable([
         ['State', { type: 'string', role: 'tooltip' }],
-        ['Iowa', '2015 - 2018'],
-        ['Illinois', 'Summer 2016'],
-        ['California', 'Thanksgiving Break 2015, Summer 2018, and 2021 - Present'],
-        ['Connecticut', 'Summer 2017'],
-        ['Delaware', 'Summer 2017'],
-        ['Massachusetts', 'Summer 2017'],
-        ['New Jersey', 'Summer 2017 and 2019 - 2021'],
-        ['New York', 'Summer 2017 and 2019 - 2021'],
-        ['Pennsylvania', 'Summer 2017'],
-        ['Rhode Island', 'Summer 2017'],
-        ['Nevada', 'Spring Break 2017 and September 2023'],
-        ['Arizona', 'September 2023'],
-        ['Oregon', 'Thanksgiving 2023'],
-        ['Washington', 'Thanksgiving 2023']
+        ['Iowa', '2015'],
+        ['Illinois', '2016'],
+        ['California', '2015'],
+        ['Connecticut', '2017'],
+        ['Delaware', '2017'],
+        ['Massachusetts', '2017'],
+        ['New Jersey', '2017'],
+        ['New York', '2017'],
+        ['Pennsylvania', '2017'],
+        ['Rhode Island', '2017'],
+        ['Nevada', '2017'],
+        ['Arizona', '2023'],
+        ['Oregon', '2023'],
+        ['Washington', '2023'],
+        ['Alaska', '2025'],
     ]);
 
     const geochart = new google.visualization.GeoChart(
