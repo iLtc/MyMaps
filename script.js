@@ -87,26 +87,54 @@ const drawCN = () => {
 const drawUS = () => {
     $('#us-map').empty();
 
-    const data = google.visualization.arrayToDataTable([
-        ['State', { type: 'string', role: 'tooltip' }],
-        ['Iowa', '2015'],
-        ['Illinois', '2016'],
-        ['California', '2015'],
-        ['Connecticut', '2017'],
-        ['Delaware', '2017'],
-        ['Massachusetts', '2017'],
-        ['New Jersey', '2017'],
-        ['New York', '2017'],
-        ['Pennsylvania', '2017'],
-        ['Rhode Island', '2017'],
-        ['Nevada', '2017'],
-        ['Arizona', '2023'],
-        ['Oregon', '2023'],
-        ['Washington', '2023'],
-        ['Alaska', '2025'],
-    ]);
+    const allStates = [
+        'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut',
+        'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa',
+        'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan',
+        'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire',
+        'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio',
+        'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota',
+        'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia',
+        'Wisconsin', 'Wyoming'
+    ];
+
+    const visited = {
+        'Iowa': '2015',
+        'California': '2015',
+        'Illinois': '2016',
+        'Connecticut': '2017',
+        'Delaware': '2017',
+        'Massachusetts': '2017',
+        'New Jersey': '2017',
+        'New York': '2017',
+        'Pennsylvania': '2017',
+        'Rhode Island': '2017',
+        'Nevada': '2017',
+        'Arizona': '2023',
+        'Oregon': '2023',
+        'Washington': '2023',
+        'Alaska': '2025'
+    };
+
+    const dataArray = [['State', 'Visited', { type: 'string', role: 'tooltip' }]];
+    allStates.forEach(state => {
+        if (visited[state]) {
+            dataArray.push([state, 1, `Visited: ${visited[state]}`]);
+        } else {
+            dataArray.push([state, 0, 'Not visited']);
+        }
+    });
+
+    const data = google.visualization.arrayToDataTable(dataArray);
+
+    const options = {
+        region: "US",
+        resolution: "provinces",
+        colors: ['#F5F5F5', '#267114'],
+        legend: 'none'
+    };
 
     const geochart = new google.visualization.GeoChart(
         document.getElementById('us-map'));
-    geochart.draw(data, { region: "US", resolution: "provinces" });
+    geochart.draw(data, options);
 };
