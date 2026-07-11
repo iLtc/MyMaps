@@ -114,7 +114,10 @@ const drawUS = () => {
         'Oregon': '2023',
         'Washington': '2023',
         'Alaska': '2025',
-        'Hawaii': '2026'
+        'Hawaii': '2026',
+        'Utah': '2026',
+        'Montana': '2026',
+        'Wyoming': '2026'
     };
 
     const dataArray = [['State', 'Visited', { type: 'string', role: 'tooltip' }]];
