@@ -129,7 +129,6 @@ a:hover { color: var(--color-accent-600); border-bottom-color: var(--color-accen
 .region {
   fill: var(--color-neutral-300);
   stroke: var(--color-bg);
-  stroke-width: 0.6;
   transition: fill 120ms ease;
 }
 .region[data-visited='yes'] { fill: var(--color-accent); }

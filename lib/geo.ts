@@ -116,7 +116,7 @@ export async function drawMap(key: MapKey, el: HTMLElement, opts: DrawOptions): 
   const path = geoPath(projection)
 
   const t = tooltip()
-  const g = svg.append('g')
+  const g = svg.append('g').attr('stroke-width', 0.6)
 
   g.selectAll<SVGPathElement, Region>('path')
     .data(shown)
