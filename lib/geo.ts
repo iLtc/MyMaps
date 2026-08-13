@@ -68,6 +68,14 @@ function tooltip(): HTMLDivElement {
   return tip
 }
 
+/* The tooltip is a body-level singleton, not a child of the map's element,
+   so a caller unmounting/redrawing that element must hide it explicitly —
+   mouseleave does not fire for a node removed/replaced while the pointer
+   is over it. */
+export function hideTooltip(): void {
+  if (tip) tip.style.opacity = '0'
+}
+
 export async function drawMap(key: MapKey, el: HTMLElement, opts: DrawOptions): Promise<void> {
   const { locale, onDrill, isStale } = opts
   const features = await loadFeatures(key)

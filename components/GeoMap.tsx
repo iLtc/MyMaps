@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { drawMap } from '@/lib/geo'
+import { drawMap, hideTooltip } from '@/lib/geo'
 import { I18N, type Locale, type MapKey } from '@/lib/i18n'
 import { pathFor } from '@/lib/paths'
 
@@ -19,6 +19,7 @@ export default function GeoMap({ mapKey, locale }: { mapKey: MapKey; locale: Loc
     const draw = () => {
       const mine = ++epoch
       const isStale = () => mine !== epoch
+      hideTooltip()
       el.innerHTML = `<div class="map-loading">${t.loading}</div>`
       drawMap(mapKey, el, {
         locale,
@@ -48,6 +49,7 @@ export default function GeoMap({ mapKey, locale }: { mapKey: MapKey; locale: Loc
       epoch = Number.MAX_SAFE_INTEGER // stale-out any in-flight draw
       ro.disconnect()
       el.innerHTML = ''
+      hideTooltip()
     }
   }, [mapKey, locale, router])
 
