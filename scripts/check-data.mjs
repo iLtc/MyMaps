@@ -28,8 +28,9 @@ for (const [key, file] of Object.entries(ATLAS)) {
   const names = new Set()
   for (const f of featuresOf(file)) {
     const n = featureName(f.properties)
-    names.add(n)
-    names.add(norm(n))
+    if (n) names.add(n)
+    const nn = norm(n)
+    if (nn) names.add(nn)
   }
   const missing = Object.keys(DATA[key]).filter(place => {
     const candidates = [norm(place)]
