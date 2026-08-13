@@ -1,3 +1,7 @@
+import MapPage from '@/components/MapPage'
+
+export const metadata = { title: 'My Maps' }
+
 export default function Page() {
-  return <h1>My Maps</h1>
+  return <MapPage locale="en" mapKey="world" />
 }
