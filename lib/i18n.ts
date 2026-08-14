@@ -8,7 +8,6 @@ export interface Strings {
   tagline: string
   updated: string
   tabs: Record<MapKey, string>
-  kicker: Record<MapKey, string>
   unit: Record<MapKey, string>
   visited: string
   notYet: string
@@ -23,7 +22,6 @@ export const I18N: Record<Locale, Strings> = {
     tagline: 'Places I have been',
     updated: 'Last updated August 2026',
     tabs: { world: 'World', china: 'China', us: 'United States' },
-    kicker: { world: 'Countries', china: 'Provinces & regions', us: 'States' },
     unit: { world: 'countries', china: 'provinces', us: 'states' },
     visited: 'Visited',
     notYet: 'Not yet',
@@ -36,7 +34,6 @@ export const I18N: Record<Locale, Strings> = {
     tagline: '我去过的地方',
     updated: '更新于 2026 年 8 月',
     tabs: { world: '世界', china: '中国', us: '美国' },
-    kicker: { world: '国家', china: '省与地区', us: '州' },
     unit: { world: '个国家', china: '个省', us: '个州' },
     visited: '去过',
     notYet: '还没去',
@@ -44,6 +41,13 @@ export const I18N: Record<Locale, Strings> = {
     failed: '地图数据加载失败。',
     reset: '重置视图'
   }
+}
+
+/* Page <title>: the map's own name, then the site's. Derived from the tab
+   and title strings above so the two can never drift apart. */
+export function titleFor(locale: Locale, map: MapKey): string {
+  const t = I18N[locale]
+  return `${t.tabs[map]} | ${t.title}`
 }
 
 /* Chinese renderings of the non-year sentinel values used in lib/data.ts. */

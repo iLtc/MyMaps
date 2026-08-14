@@ -42,7 +42,6 @@ export default function MapPage({ locale, mapKey }: { locale: Locale; mapKey: Ma
       <section>
         <div className="panel-head">
           <div>
-            <div className="kicker">{t.kicker[mapKey]}</div>
             <div className="count">
               <span className="fig">{countFor(mapKey)}</span>
               <span className="unit">{t.unit[mapKey]}</span>

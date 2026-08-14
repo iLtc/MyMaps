@@ -75,19 +75,13 @@ a:hover { color: var(--color-accent-600); border-bottom-color: var(--color-accen
 .tab[aria-current='page'] { color: var(--color-text); border-bottom-color: var(--color-accent); }
 :lang(zh) .tab, :lang(zh) h1 { letter-spacing: 0; }
 
-/* Panel head: kicker + count on the left, legend on the right */
+/* Panel head: count on the left, legend on the right */
 .panel-head {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
   gap: var(--space-8);
   margin-bottom: var(--space-4);
-}
-.kicker {
-  font-size: 12px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--color-neutral-600);
 }
 .count { display: flex; align-items: baseline; gap: var(--space-2); }
 .count .fig {
@@ -108,7 +102,7 @@ a:hover { color: var(--color-accent-600); border-bottom-color: var(--color-accen
 
 /* Map */
 .map { width: 100%; position: relative; }
-.map svg { cursor: grab; touch-action: none; overflow: hidden; }
+.map svg { touch-action: none; overflow: hidden; }
 .map svg:active { cursor: grabbing; }
 .map-reset {
   position: absolute;
@@ -131,6 +125,9 @@ a:hover { color: var(--color-accent-600); border-bottom-color: var(--color-accen
   stroke: var(--color-bg);
   transition: fill 120ms ease;
 }
+/* Only the world map's China / United States drill into another map, so
+   they are the only regions that advertise themselves as clickable. */
+.region[data-drill='yes'] { cursor: pointer; }
 .region[data-visited='yes'] { fill: var(--color-accent); }
 .region[data-visited='yes']:hover { fill: var(--color-accent-700); }
 .region[data-visited='no']:hover { fill: var(--color-neutral-400); }

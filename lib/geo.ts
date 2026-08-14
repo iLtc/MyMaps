@@ -8,10 +8,10 @@ import { feature } from 'topojson-client'
 import type { Feature, FeatureCollection, Geometry } from 'geojson'
 import { DATA, ZH_LABELS } from './data'
 import { I18N, YEAR_ZH, type Locale, type MapKey } from './i18n'
+import { NAMES } from './names'
 import { featureName, norm } from './normalize'
 
 type Region = Feature<Geometry, Record<string, unknown>>
-type Entry = { label: string; year: string }
 
 export interface DrawOptions {
   locale: Locale
@@ -76,6 +76,17 @@ export function hideTooltip(): void {
   if (tip) tip.style.opacity = '0'
 }
 
+/* Which regions drill into another map. Drives both the click handler and
+   the data-drill attribute the CSS uses for the pointer cursor, so the two
+   can never disagree about what looks clickable. */
+function drillTarget(key: MapKey, d: Region): 'china' | 'us' | null {
+  if (key !== 'world') return null
+  const n = norm(featureName(d.properties))
+  if (n === 'china') return 'china'
+  if (n === 'united states') return 'us'
+  return null
+}
+
 export async function drawMap(key: MapKey, el: HTMLElement, opts: DrawOptions): Promise<void> {
   const { locale, onDrill, isStale } = opts
   const features = await loadFeatures(key)
@@ -83,17 +94,19 @@ export async function drawMap(key: MapKey, el: HTMLElement, opts: DrawOptions): 
 
   const visited: Record<string, string> = DATA[key]
   const zhLabels: Record<string, string> = ZH_LABELS[key]
-  const lookup = new Map<string, Entry>()
+  /* Visit years only — the region's displayed name comes from NAMES, which
+     covers every feature, so visited and unvisited regions read the same
+     language. */
+  const lookup = new Map<string, string>()
   for (const place of Object.keys(visited)) {
     const raw = visited[place]
-    const entry: Entry = {
-      label: locale === 'zh' ? (zhLabels[place] ?? place) : place,
-      year: locale === 'zh' ? (YEAR_ZH[raw] ?? raw) : raw
-    }
-    lookup.set(norm(place), entry)
+    const year = locale === 'zh' ? (YEAR_ZH[raw] ?? raw) : raw
+    lookup.set(norm(place), year)
     /* The china atlas names features in Chinese — index by label too. */
-    if (key === 'china') lookup.set(zhLabels[place], entry)
+    if (key === 'china') lookup.set(zhLabels[place], year)
   }
+
+  const labelFor = (atlasName: string) => NAMES[key][atlasName]?.[locale] ?? atlasName
 
   const w = el.clientWidth || 900
   const h = Math.round(w * ASPECT[key])
@@ -127,13 +140,15 @@ export async function drawMap(key: MapKey, el: HTMLElement, opts: DrawOptions): 
       const nm = featureName(d.properties)
       return lookup.has(nm) || lookup.has(norm(nm)) ? 'yes' : 'no'
     })
+    .attr('data-drill', d => (drillTarget(key, d) ? 'yes' : null))
     .on('mousemove', (ev: MouseEvent, d: Region) => {
       const name = featureName(d.properties)
-      const hit = lookup.get(name) ?? lookup.get(norm(name))
+      const label = labelFor(name)
+      const year = lookup.get(name) ?? lookup.get(norm(name))
       /* Content comes from our own data files and atlas — no user input. */
-      t.innerHTML = hit
-        ? `<span class="tip-name">${hit.label}</span><span class="tip-year">${hit.year}</span>`
-        : `<span class="tip-name tip-dim">${name}</span>`
+      t.innerHTML = year
+        ? `<span class="tip-name">${label}</span><span class="tip-year">${year}</span>`
+        : `<span class="tip-name tip-dim">${label}</span>`
       t.style.opacity = '1'
       t.style.left = `${ev.clientX + 14}px`
       t.style.top = `${ev.clientY + 14}px`
@@ -142,10 +157,8 @@ export async function drawMap(key: MapKey, el: HTMLElement, opts: DrawOptions): 
       t.style.opacity = '0'
     })
     .on('click', (_ev: MouseEvent, d: Region) => {
-      if (key !== 'world' || !onDrill) return
-      const n = norm(featureName(d.properties))
-      if (n === 'china') onDrill('china')
-      else if (n === 'united states') onDrill('us')
+      const target = drillTarget(key, d)
+      if (target && onDrill) onDrill(target)
     })
 
   const reset = document.createElement('button')

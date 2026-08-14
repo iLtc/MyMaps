@@ -50,13 +50,28 @@ against the committed atlases and fails the build listing unmatched names.
 Atlas files in `public/atlas/` are committed, from world-atlas@2.0.2
 (countries-110m), us-atlas@3.0.1 (states-10m), and china-geojson@1.0.0.
 
+### Region display names
+
+`lib/names.ts` holds an en/zh display name for **every** feature in every
+atlas, keyed by the atlas's own name for that feature — so a region reads in
+the page's language whether or not it has been visited. The atlases are
+single-language (world/us English, china Chinese), so without this table
+unvisited regions render in the atlas's language instead of the page's.
+`en` is a display name, not an echo of the key: it spells out the atlases'
+abbreviations (`Bosnia and Herz.` → `Bosnia and Herzegovina`).
+
+`scripts/check-data.mjs` fails the build if an atlas feature has no entry, if
+an entry is missing either locale, or if an entry's Chinese name disagrees
+with the `ZH_LABELS` value a visited place carries. Swapping an atlas
+therefore cannot silently reintroduce mixed-language tooltips.
+
 ### Node-run TypeScript constraint
 
 `scripts/check-data.mjs` and `tests/*.test.ts` run under plain Node 24 (type
 stripping) and import lib files with explicit `.ts` extensions. Therefore
-`lib/i18n.ts`, `lib/data.ts`, `lib/normalize.ts`, and `lib/paths.ts` may only
-cross-import each other with `import type`. `lib/geo.ts` is bundler-only and
-exempt.
+`lib/i18n.ts`, `lib/data.ts`, `lib/names.ts`, `lib/normalize.ts`, and
+`lib/paths.ts` may only cross-import each other with `import type`.
+`lib/geo.ts` is bundler-only and exempt.
 
 ## Conventions
 
