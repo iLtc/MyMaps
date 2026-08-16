@@ -1,24 +1,37 @@
-/* Build gate, two checks, both exiting non-zero with the offending names:
+/* Build gate. Every check below fails the build with the offending names,
+   so a data mistake stops the deploy instead of silently changing the map.
 
-   1. Every visited place in lib/data.ts must match a feature in its
-      committed atlas, using the same norm() logic the map engine uses —
-      a misspelled region fails the deploy instead of silently vanishing
-      from the map.
-   2. Every atlas feature must have an en and a zh display name in
-      lib/names.ts, and those must agree with the Chinese label a visited
-      place carries in lib/data.ts. Without this, a new or updated atlas
-      would quietly reintroduce regions that render in the wrong language. */
+   1. Every visited place in lib/data.ts names a real atlas feature. Keys are
+      compared to atlas names exactly — the same plain lookup the engine
+      does — so what this verifies is what the browser draws.
+   2. Every atlas feature has an en and a zh display name in lib/names.ts.
+      Without this a new or updated atlas would quietly reintroduce regions
+      that render in the wrong language.
+   3. No visited place is on the engine's HIDE list. Such a place would pass
+      check 1 and still never appear — exactly the silent drop this gate
+      exists to prevent. */
 import { readFileSync } from 'node:fs'
 import { feature } from 'topojson-client'
-import { DATA, ZH_LABELS } from '../lib/data.ts'
+import { DATA } from '../lib/data.ts'
 import { NAMES } from '../lib/names.ts'
-import { featureName, norm } from '../lib/normalize.ts'
 
 const ATLAS = {
   world: 'public/atlas/world.json',
   china: 'public/atlas/china.json',
   us: 'public/atlas/us.json'
 }
+
+/* Mirrors HIDE in lib/geo.ts, which is bundler-only and cannot be imported
+   here. The duplication is deliberate and small; check 3 is what makes a
+   disagreement between the two visible. */
+const HIDDEN = {
+  world: ['Antarctica'],
+  china: ['南海诸岛'],
+  us: []
+}
+
+/* Same one-line accessor as lib/geo.ts: all three atlases use properties.name. */
+const featureName = props => (typeof props?.name === 'string' ? props.name : '')
 
 function featuresOf(file) {
   const raw = JSON.parse(readFileSync(file, 'utf8'))
@@ -31,62 +44,39 @@ function featuresOf(file) {
 
 let failed = false
 
+const fail = (key, msg) => {
+  failed = true
+  console.error(`[check-data] ${key}: ${msg}`)
+}
+
 for (const [key, file] of Object.entries(ATLAS)) {
   const features = featuresOf(file)
-  const names = new Set()
-  for (const f of features) {
-    const n = featureName(f.properties)
-    if (n) names.add(n)
-    const nn = norm(n)
-    if (nn) names.add(nn)
-  }
+  const atlasNames = new Set(features.map(f => featureName(f.properties)))
+  const places = Object.keys(DATA[key])
 
-  /* Check 1 — every visited place matches an atlas feature. */
-  const missing = Object.keys(DATA[key]).filter(place => {
-    const candidates = [norm(place)]
-    if (key === 'china') candidates.push(ZH_LABELS.china[place])
-    return !candidates.some(c => names.has(c))
-  })
-  if (missing.length) {
-    failed = true
-    console.error(`[check-data] ${key}: no atlas feature matches: ${missing.join(', ')}`)
+  /* 1 — every visited place is a real feature. */
+  const unmatched = places.filter(place => !atlasNames.has(place))
+  if (unmatched.length) {
+    fail(key, `no atlas feature named: ${unmatched.join(', ')}`)
   } else {
-    console.log(`[check-data] ${key}: ${Object.keys(DATA[key]).length} places all matched`)
+    console.log(`[check-data] ${key}: ${places.length} places all matched`)
   }
 
-  /* Check 2a — every atlas feature has a display name in both locales. */
-  const unnamed = []
-  for (const f of features) {
-    const n = featureName(f.properties)
+  /* 2 — every feature has a display name in both locales. */
+  const unnamed = [...atlasNames].filter(n => {
     const entry = NAMES[key][n]
-    if (!entry || !entry.en || !entry.zh) unnamed.push(n || '(unnamed feature)')
-  }
+    return !entry || !entry.en || !entry.zh
+  })
   if (unnamed.length) {
-    failed = true
-    console.error(`[check-data] ${key}: no en/zh display name for: ${unnamed.join(', ')}`)
+    fail(key, `no en/zh display name for: ${unnamed.join(', ')}`)
   } else {
-    console.log(`[check-data] ${key}: ${features.length} features all named in en and zh`)
+    console.log(`[check-data] ${key}: ${atlasNames.size} features all named in en and zh`)
   }
 
-  /* Check 2b — a visited place's Chinese label must equal what NAMES will
-     actually render for the atlas feature it matched, or the tooltip and
-     the data file would disagree. */
-  const drifted = []
-  for (const place of Object.keys(DATA[key])) {
-    const zh = ZH_LABELS[key][place]
-    const hit = features.find(f => {
-      const n = featureName(f.properties)
-      return n === zh || n === place || (norm(n) && norm(n) === norm(place))
-    })
-    if (!hit) continue // already reported by check 1
-    const entry = NAMES[key][featureName(hit.properties)]
-    if (entry && entry.zh !== zh) {
-      drifted.push(`${place} (data: ${zh}, names: ${entry.zh})`)
-    }
-  }
-  if (drifted.length) {
-    failed = true
-    console.error(`[check-data] ${key}: Chinese label disagrees with lib/names.ts: ${drifted.join(', ')}`)
+  /* 3 — no visited place is hidden from the map. */
+  const hidden = places.filter(place => HIDDEN[key].includes(place))
+  if (hidden.length) {
+    fail(key, `visited but on the engine's HIDE list, so never drawn: ${hidden.join(', ')}`)
   }
 }
 

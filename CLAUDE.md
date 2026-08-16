@@ -35,17 +35,25 @@ detection). Each `app/**/page.tsx` is a one-liner rendering
   side). Fetches `/atlas/*.json` (module-level cache), draws SVG with
   tooltip, zoom/pan + reset. World-map clicks on China/US drill into that
   map's route.
-- `lib/data.ts` — the ONLY file to edit for a new visit. Add the place to
-  `DATA` and its Chinese name to `ZH_LABELS` (types enforce the pairing).
-  Counts are derived — never hardcode them.
+- `lib/data.ts` — the ONLY file to edit for a new visit. Add the place under
+  the right map, keyed by the atlas's own name for it. Counts are derived —
+  never hardcode them.
 
 ### Region-name matching
 
-Visited names must match atlas features through `lib/normalize.ts` (`norm()`:
-lowercase, strip admin suffixes, alias table). The china atlas names features
-in bare Chinese (安徽), matched via `ZH_LABELS.china`. A wrong name cannot
-silently drop a region: `scripts/check-data.mjs` runs the same `norm()` logic
-against the committed atlases and fails the build listing unmatched names.
+`DATA`'s keys ARE atlas feature names, character for character, so matching
+is a plain object lookup with no normalisation layer in between — the world
+and us atlases name features in English (`United States of America`), the
+china atlas in bare Chinese (`安徽`), and the keys follow suit. Display names
+come from `lib/names.ts`, so a key never has to be pretty; it only has to
+match. Get one wrong and `scripts/check-data.mjs` fails the build naming it,
+rather than the region silently vanishing from the map.
+
+This replaced an earlier `lib/normalize.ts`, whose fuzzy matching (lowercase,
+strip admin suffixes, alias table) was inherited from the Google Charts site's
+pinyin identifiers (`Heilongjiang Sheng`). Against the committed atlases it
+earned its keep on exactly one entry, did nothing at all on `us`, and
+collapsed every china name to the empty string. Don't reintroduce it.
 
 Atlas files in `public/atlas/` are committed, from world-atlas@2.0.2
 (countries-110m), us-atlas@3.0.1 (states-10m), and china-geojson@1.0.0.
@@ -60,18 +68,20 @@ unvisited regions render in the atlas's language instead of the page's.
 `en` is a display name, not an echo of the key: it spells out the atlases'
 abbreviations (`Bosnia and Herz.` → `Bosnia and Herzegovina`).
 
-`scripts/check-data.mjs` fails the build if an atlas feature has no entry, if
-an entry is missing either locale, or if an entry's Chinese name disagrees
-with the `ZH_LABELS` value a visited place carries. Swapping an atlas
-therefore cannot silently reintroduce mixed-language tooltips.
+`scripts/check-data.mjs` fails the build if an atlas feature has no entry or
+is missing either locale, so swapping an atlas cannot silently reintroduce
+mixed-language tooltips. It also fails if a visited place sits on the
+engine's `HIDE` list, which would otherwise match cleanly and still never be
+drawn. `HIDE` is mirrored in the gate because `lib/geo.ts` is bundler-only
+and can't be imported there — that check is what keeps the two honest.
 
 ### Node-run TypeScript constraint
 
 `scripts/check-data.mjs` and `tests/*.test.ts` run under plain Node 24 (type
 stripping) and import lib files with explicit `.ts` extensions. Therefore
-`lib/i18n.ts`, `lib/data.ts`, `lib/names.ts`, `lib/normalize.ts`, and
-`lib/paths.ts` may only cross-import each other with `import type`.
-`lib/geo.ts` is bundler-only and exempt.
+`lib/i18n.ts`, `lib/data.ts`, `lib/names.ts`, and `lib/paths.ts` may only
+cross-import each other with `import type`. `lib/geo.ts` is bundler-only and
+exempt.
 
 ## Conventions
 

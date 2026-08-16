@@ -6,12 +6,19 @@ import { zoom, zoomIdentity, type D3ZoomEvent } from 'd3-zoom'
 import 'd3-transition'
 import { feature } from 'topojson-client'
 import type { Feature, FeatureCollection, Geometry } from 'geojson'
-import { DATA, ZH_LABELS } from './data'
+import { DATA } from './data'
 import { I18N, YEAR_ZH, type Locale, type MapKey } from './i18n'
 import { NAMES } from './names'
-import { featureName, norm } from './normalize'
 
 type Region = Feature<Geometry, Record<string, unknown>>
+
+/* All three committed atlases carry the region's name at properties.name.
+   Everything downstream — DATA's keys, NAMES' keys, HIDE, the drill targets
+   — is written to match that string exactly, so there is no normalisation
+   step to disagree about. */
+function featureName(props: Record<string, unknown>): string {
+  return typeof props?.name === 'string' ? props.name : ''
+}
 
 export interface DrawOptions {
   locale: Locale
@@ -27,8 +34,12 @@ const ATLAS_PATH: Record<MapKey, string> = {
   us: '/atlas/us.json'
 }
 
+/* Atlas features that exist in the data but should not be drawn. They are
+   excluded before projection.fitSize(), so they also don't get a vote in
+   how the map is framed — which is the point: Antarctica would squash every
+   populated continent, and the 南海诸岛 inset would force China to zoom out. */
 const HIDE: Record<MapKey, string[]> = {
-  world: ['antarctica'],
+  world: ['Antarctica'],
   china: ['南海诸岛'],
   us: []
 }
@@ -81,9 +92,9 @@ export function hideTooltip(): void {
    can never disagree about what looks clickable. */
 function drillTarget(key: MapKey, d: Region): 'china' | 'us' | null {
   if (key !== 'world') return null
-  const n = norm(featureName(d.properties))
-  if (n === 'china') return 'china'
-  if (n === 'united states') return 'us'
+  const n = featureName(d.properties)
+  if (n === 'China') return 'china'
+  if (n === 'United States of America') return 'us'
   return null
 }
 
@@ -93,17 +104,13 @@ export async function drawMap(key: MapKey, el: HTMLElement, opts: DrawOptions): 
   if (isStale?.()) return
 
   const visited: Record<string, string> = DATA[key]
-  const zhLabels: Record<string, string> = ZH_LABELS[key]
-  /* Visit years only — the region's displayed name comes from NAMES, which
-     covers every feature, so visited and unvisited regions read the same
-     language. */
+  /* Visit years, keyed by atlas name. The displayed name comes from NAMES,
+     which covers every feature, so visited and unvisited regions read the
+     same language. */
   const lookup = new Map<string, string>()
   for (const place of Object.keys(visited)) {
     const raw = visited[place]
-    const year = locale === 'zh' ? (YEAR_ZH[raw] ?? raw) : raw
-    lookup.set(norm(place), year)
-    /* The china atlas names features in Chinese — index by label too. */
-    if (key === 'china') lookup.set(zhLabels[place], year)
+    lookup.set(place, locale === 'zh' ? (YEAR_ZH[raw] ?? raw) : raw)
   }
 
   const labelFor = (atlasName: string) => NAMES[key][atlasName]?.[locale] ?? atlasName
@@ -119,10 +126,7 @@ export async function drawMap(key: MapKey, el: HTMLElement, opts: DrawOptions): 
     .attr('height', h)
     .style('display', 'block')
 
-  const shown = features.filter(f => {
-    const n = featureName(f.properties)
-    return !HIDE[key].includes(n) && !HIDE[key].includes(norm(n))
-  })
+  const shown = features.filter(f => !HIDE[key].includes(featureName(f.properties)))
 
   const projection = PROJ[key]()
   projection.fitSize([w, h], { type: 'FeatureCollection', features: shown })
@@ -136,15 +140,12 @@ export async function drawMap(key: MapKey, el: HTMLElement, opts: DrawOptions): 
     .join('path')
     .attr('d', d => path(d))
     .attr('class', 'region')
-    .attr('data-visited', d => {
-      const nm = featureName(d.properties)
-      return lookup.has(nm) || lookup.has(norm(nm)) ? 'yes' : 'no'
-    })
+    .attr('data-visited', d => (lookup.has(featureName(d.properties)) ? 'yes' : 'no'))
     .attr('data-drill', d => (drillTarget(key, d) ? 'yes' : null))
     .on('mousemove', (ev: MouseEvent, d: Region) => {
       const name = featureName(d.properties)
       const label = labelFor(name)
-      const year = lookup.get(name) ?? lookup.get(norm(name))
+      const year = lookup.get(name)
       /* Content comes from our own data files and atlas — no user input. */
       t.innerHTML = year
         ? `<span class="tip-name">${label}</span><span class="tip-year">${year}</span>`
