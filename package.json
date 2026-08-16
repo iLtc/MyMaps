@@ -1,0 +1,35 @@
+{
+  "name": "mymaps",
+  "private": true,
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "dev": "next dev",
+    "prebuild": "node scripts/check-data.mjs",
+    "build": "next build",
+    "test": "node --test tests/*.test.ts",
+    "check-data": "node scripts/check-data.mjs"
+  },
+  "dependencies": {
+    "@next/third-parties": "^16.3.0",
+    "d3-geo": "^3.1.1",
+    "d3-selection": "^3.0.0",
+    "d3-transition": "^3.0.1",
+    "d3-zoom": "^3.0.0",
+    "next": "^16.3.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "topojson-client": "^3.1.0"
+  },
+  "devDependencies": {
+    "@types/d3-geo": "^3.1.0",
+    "@types/d3-selection": "^3.0.0",
+    "@types/d3-transition": "^3.0.0",
+    "@types/d3-zoom": "^3.0.0",
+    "@types/geojson": "^7946.0.14",
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@types/topojson-client": "^3.1.0",
+    "typescript": "~5.9.0"
+  }
+}
